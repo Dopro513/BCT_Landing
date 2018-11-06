@@ -106,27 +106,58 @@ $(function () {
 		$('#videoModal').removeClass('open');
 		$('#videoModal').html('');
 	});
-	
+
+	var cities = [];
+	var countries = [];
+
+	var $select_country = $('select.country').selectize({
+		onChange: updateCities
+	});
+	var select_country  = $select_country[0].selectize;
+
+	var $select_city = $('select.city').selectize();
+	var select_city  = $select_city[0].selectize;
 
 	$.ajax({
 		url: 'https://transit.api.here.com/v3/coverage/city.json?app_id=VSsLMGuAIbLdZB43Xz8m&app_code=6etP4l-MU3ln22TAoIupOA',
 		async: true,
 		success: function (data) {
 			cities = data.Res.Coverage.Cities.City;
-
-			var initial_cities = cities.filter((item) => {
-				return item.country == "United States";
-			})
-			
-			var cities_downlist = '';
-			for (var i = 0; i < initial_cities.length; i++) {
-				cities_downlist += `
-					<option>` + initial_cities[i].name + ', ' +  initial_cities[i].state + `</option>
-				`;
+			for (var i = 0; i < cities.length; i++) {
+				var countries_templist = countries.filter(item => {
+					return item.value == cities[i].country
+				});
+				if (countries_templist.length == 0) {
+					country_temp = cities[i].country;
+					countries.push({
+						text: cities[i].country,
+						value: cities[i].country
+					})
+				}
 			}
-			$(".basic-select.city").html(cities_downlist);
 			
-			$('select').selectize();
+			select_country.clearOptions();
+			select_country.addOption(countries);
+			select_country.setValue("United States", false);
+			updateCities("United States");
 		}
 	});
+
+	function updateCities(country) {
+		if (country == '') return;
+		var cities_list = cities.filter((item) => {
+			return item.country == country;
+		});
+
+		var cities_options = cities_list.map((item) => {
+			return {
+				text: item.name + ', ' + item.state,
+				value: item.name + ', ' + item.state
+			}
+		});
+
+		select_city.clearOptions();
+		select_city.addOption(cities_options);
+		select_city.setValue(cities_options[0].value, false);
+	}
 });

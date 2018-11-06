@@ -2466,7 +2466,8 @@ h6 {
     border: 1px solid #d5d5d5;
     background: #fff;
     box-shadow: none;
-    padding: 26px 18px 10px; }
+    padding: 26px 18px 10px;
+    white-space: nowrap; }
   .basic-select.single .selectize-dropdown {
     z-index: 11;
     padding-left: 18px; }
